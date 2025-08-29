@@ -7,7 +7,7 @@ function GitHubCorner() {
 
     return (
         <a
-            href="https://github.com/SangameshDhannur/Collaborative-Coding-Platform"
+            href="https://github.com/Pavankore32/main-project"
             className="github-corner"
             aria-label="View source on GitHub"
             target="_blank"
