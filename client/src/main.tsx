@@ -1,7 +1,6 @@
 // client/src/main.tsx
-import React, { useEffect, useState, useCallback } from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
+import { useEffect, useState, useCallback } from "react";
 import AppProvider from "./context/AppProvider";
 import "@/styles/global.css";
 
