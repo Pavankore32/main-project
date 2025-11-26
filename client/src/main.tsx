@@ -4,8 +4,8 @@ import App from "./App.tsx"
 import AppProvider from "./context/AppProvider.tsx"
 import "@/styles/global.css"
 
-// IMPORTANT: import socket with explicit extension to avoid TS resolver issues
-import socket from "./socket.ts"
+// Use the src alias — this matches your other imports and usually resolves during Vite/TS build
+import socket from "@/socket"
 
 // expose socket globally (for permission modal)
 ;(window as any).socket = socket
@@ -18,7 +18,6 @@ type PermissionRequestPayload = {
   message?: string
 }
 
-// typed modal payload handler
 ;(window as any).showPermissionRequestModal = function (payload: PermissionRequestPayload) {
   const { fileId, requester, requestType, message } = payload
 
@@ -40,7 +39,6 @@ type PermissionRequestPayload = {
 
     alert(`You granted ${requestType} access to ${requester}.`)
   } else {
-    // optional: deny-permission may not be handled server-side but harmless
     socket.emit("deny-permission", {
       fileId,
       targetUsername: requester,
