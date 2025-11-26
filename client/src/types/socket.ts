@@ -1,9 +1,7 @@
-// src/socket.ts
+// client/src/socket.ts
 import { io, Socket as ClientSocket } from "socket.io-client"
 
-/* -------------------------
-   keep your existing types
-------------------------- */
+/* Types & events (keep synced with server) */
 type SocketId = string
 
 enum SocketEvent {
@@ -36,10 +34,7 @@ interface SocketContext {
   socket: ClientSocket
 }
 
-/* ---------------------------------------
-   CONNECT TO YOUR RENDER BACKEND
----------------------------------------- */
-
+/* ---- CONNECT: replace your backend URL earlier inserted by you ---- */
 export const socket: ClientSocket = io("https://main-project-ghf9.onrender.com", {
   autoConnect: true,
 })
@@ -67,7 +62,7 @@ export function revokePermission(fileId: string, targetUsername: string) {
 }
 
 /* -------------------------
-   Client Listeners (server -> client)
+   Client Listeners
 ------------------------- */
 
 socket.on("permission-request-sent", ({ fileId, owner }) => {
@@ -80,22 +75,18 @@ socket.on("permission-error", ({ reason }) => {
 
 socket.on("permission-request", (payload) => {
   console.log("Permission request:", payload)
-
   if (window && (window as any).showPermissionRequestModal) {
     (window as any).showPermissionRequestModal(payload)
   }
 })
 
 socket.on("permission-updated", ({ fileId, perms, owner }) => {
-  if (window && (window as any).enableFileActions)
-    (window as any).enableFileActions(fileId, perms)
-
+  if (window && (window as any).enableFileActions) (window as any).enableFileActions(fileId, perms)
   console.log(`Permissions updated by ${owner} for file ${fileId}`)
 })
 
 socket.on("permission-revoked", ({ fileId }) => {
-  if (window && (window as any).disableFileActions)
-    (window as any).disableFileActions(fileId)
+  if (window && (window as any).disableFileActions) (window as any).disableFileActions(fileId)
 })
 
 socket.on("permission-denied", ({ action, fileId }) => {
@@ -112,6 +103,7 @@ declare global {
     enableFileActions?: any
     disableFileActions?: any
     currentPermissions?: any
+    socket?: any
   }
 }
 
