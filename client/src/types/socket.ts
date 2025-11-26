@@ -1,7 +1,7 @@
 // client/src/types/socket.ts
-import { Socket } from "socket.io-client"
+import { Socket } from "socket.io-client";
 
-type SocketId = string
+type SocketId = string;
 
 enum SocketEvent {
   JOIN_REQUEST = "join-request",
@@ -27,7 +27,6 @@ enum SocketEvent {
   REQUEST_DRAWING = "request-drawing",
   SYNC_DRAWING = "sync-drawing",
   DRAWING_UPDATE = "drawing-update",
-  // permission-related (if used by client code)
   REQUEST_PERMISSION = "request-permission",
   GRANT_PERMISSION = "grant-permission",
   REVOKE_PERMISSION = "revoke-permission",
@@ -39,9 +38,9 @@ enum SocketEvent {
 }
 
 interface SocketContext {
-  socket: Socket
+  socket: Socket;
 }
 
-export { SocketEvent, SocketContext, SocketId }
-export type { SocketId as SocketIdType }
-export default SocketEvent
+export { SocketEvent, SocketContext, SocketId };
+export type { SocketId as SocketIdType };
+export default SocketEvent;
