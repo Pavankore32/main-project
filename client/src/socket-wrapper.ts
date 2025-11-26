@@ -2,18 +2,29 @@
 import { io, Socket as ClientSocket } from "socket.io-client";
 
 const DEFAULT_BACKEND = "http://localhost:3000";
+
+function getViteBackend(): string | undefined {
+  try {
+    // Vite exposes env on import.meta.env
+    // @ts-ignore
+    const env = (import.meta as any)?.env;
+    if (env && env.VITE_BACKEND_URL) return String(env.VITE_BACKEND_URL);
+  } catch (e) {
+    // import.meta may not exist in non-Vite envs — ignore
+  }
+  return undefined;
+}
+
 const BACKEND_URL =
-  (typeof import !== "undefined" &&
-    typeof (import as any).meta !== "undefined" &&
-    ((import as any).meta.env?.VITE_BACKEND_URL as string)) ||
-  (process.env.REACT_APP_BACKEND_URL as string) ||
+  getViteBackend() ||
+  (typeof process !== "undefined" ? (process.env.REACT_APP_BACKEND_URL as string | undefined) : undefined) ||
   DEFAULT_BACKEND;
 
 export const socket: ClientSocket = io(BACKEND_URL, {
   autoConnect: true,
 });
 
-/* Event names (same as server) */
+/* Event names (shared with server) */
 export enum SocketEvent {
   JOIN_REQUEST = "join-request",
   JOIN_ACCEPTED = "join-accepted",
@@ -52,10 +63,10 @@ export enum SocketEvent {
    Join / file-create helpers
    ----------------------------- */
 
-/**
- * Join a room and receive ack: { ok, user, users, files }
- */
-export function joinRoom(roomId: string, username?: string): Promise<{ ok: boolean; files?: any[]; reason?: string }> {
+export function joinRoom(
+  roomId: string,
+  username?: string
+): Promise<{ ok: boolean; files?: any[]; reason?: string }> {
   return new Promise((resolve) => {
     const normalized = String(roomId || "").trim();
     socket.emit(SocketEvent.JOIN_REQUEST, { roomId: normalized, username }, (ack: any) => {
@@ -65,8 +76,7 @@ export function joinRoom(roomId: string, username?: string): Promise<{ ok: boole
 }
 
 /**
- * IMPORTANT: server expects payload shape { parentDirId, newFile }
- * where newFile is the file object. Use this helper to emit.
+ * server expects payload shape { parentDirId, newFile }
  */
 export function emitFileCreate(parentDirId: string | null, newFile: any) {
   const payload = { parentDirId: parentDirId ?? null, newFile };
