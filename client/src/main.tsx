@@ -1,13 +1,12 @@
-// client/src/main.tsx
 import ReactDOM from "react-dom/client"
 import App from "./App.tsx"
 import AppProvider from "./context/AppProvider.tsx"
 import "@/styles/global.css"
 
-// Use the src alias — this matches your other imports and usually resolves during Vite/TS build
-import socket from "@/socket"
+// Import socket from the wrapper (this fixes Render compile issue)
+import socket from "./socket-wrapper"
 
-// expose socket globally (for permission modal)
+// Make socket available globally for permission modal
 ;(window as any).socket = socket
 
 type RequestType = "edit" | "delete" | "both"
@@ -36,14 +35,12 @@ type PermissionRequestPayload = {
         canDelete: requestType === "delete" || requestType === "both",
       },
     })
-
     alert(`You granted ${requestType} access to ${requester}.`)
   } else {
     socket.emit("deny-permission", {
       fileId,
       targetUsername: requester,
     })
-
     alert(`You denied permission to ${requester}.`)
   }
 }
