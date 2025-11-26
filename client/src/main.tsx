@@ -1,17 +1,15 @@
 // client/src/main.tsx
-import React from "react"
 import ReactDOM from "react-dom/client"
 import App from "./App.tsx"
 import AppProvider from "./context/AppProvider.tsx"
 import "@/styles/global.css"
 
-// IMPORTANT: import socket (include extension if your build needs it)
-import socket from "./socket" // try "./socket.ts" if your build complains
+// IMPORTANT: import socket with explicit extension to avoid TS resolver issues
+import socket from "./socket.ts"
 
-// expose socket globally (for quick modal code)
+// expose socket globally (for permission modal)
 ;(window as any).socket = socket
 
-// typed modal payload
 type RequestType = "edit" | "delete" | "both"
 type PermissionRequestPayload = {
   fileId: string
@@ -20,7 +18,7 @@ type PermissionRequestPayload = {
   message?: string
 }
 
-// owner approval modal (typed)
+// typed modal payload handler
 ;(window as any).showPermissionRequestModal = function (payload: PermissionRequestPayload) {
   const { fileId, requester, requestType, message } = payload
 
@@ -31,7 +29,6 @@ type PermissionRequestPayload = {
   )
 
   if (allow) {
-    // Owner grants permission
     socket.emit("grant-permission", {
       fileId,
       targetUsername: requester,
@@ -43,7 +40,7 @@ type PermissionRequestPayload = {
 
     alert(`You granted ${requestType} access to ${requester}.`)
   } else {
-    // Owner denies request (server may ignore if not implemented, harmless)
+    // optional: deny-permission may not be handled server-side but harmless
     socket.emit("deny-permission", {
       fileId,
       targetUsername: requester,
