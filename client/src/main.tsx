@@ -1,12 +1,13 @@
+// client/src/main.tsx
 import ReactDOM from "react-dom/client"
 import App from "./App.tsx"
 import AppProvider from "./context/AppProvider.tsx"
 import "@/styles/global.css"
 
-// Import socket from the wrapper (this fixes Render compile issue)
+// import wrapper (relative) — final stable path
 import socket from "./socket-wrapper"
 
-// Make socket available globally for permission modal
+// expose socket globally
 ;(window as any).socket = socket
 
 type RequestType = "edit" | "delete" | "both"
@@ -19,7 +20,6 @@ type PermissionRequestPayload = {
 
 ;(window as any).showPermissionRequestModal = function (payload: PermissionRequestPayload) {
   const { fileId, requester, requestType, message } = payload
-
   const allow = confirm(
     `${requester} wants ${requestType} access to file: ${fileId}\n\n` +
       `Message: ${message || "(no message)"}\n\n` +
