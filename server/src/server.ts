@@ -28,7 +28,9 @@ const io = new Server(server, {
 let userSocketMap: User[] = [];
 
 /** Helpers -------------------------------------------------- */
-function getUsersInRoom(roomId: string): User[] {
+/** Accept undefined roomId safely — return empty array when missing */
+function getUsersInRoom(roomId?: string): User[] {
+  if (!roomId) return [];
   return userSocketMap.filter((user) => user.roomId === roomId);
 }
 
